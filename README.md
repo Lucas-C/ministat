@@ -9,7 +9,8 @@ There should be no dependencies besides the standard libraries and a functional 
 
 	$ cd ministat/
 	$ make
-	# INSTALLPATH=/usr/bin make install
+	$ make PREFIX=/usr install
+	install -m 0755 ministat  /usr/bin/ministat
 
 ## Usage
 The FreeBSD man page is very relevant, pursue it [here](http://www.freebsd.org/cgi/man.cgi?ministat).

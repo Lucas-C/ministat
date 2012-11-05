@@ -1,5 +1,5 @@
 CC ?= clang 
-INSTALLPATH ?= /usr/bin
+PREFIX ?= /usr
 
 CFLAGS += -Wall -Werror
 LDFLAGS += -lm
@@ -31,7 +31,8 @@ depend:
 	@echo "Dependencies are automatically generated."
 
 install:
-	install -m 0755 $(OBJ)/$(BIN) $(INSTALLPATH)
+	install -d $(PREFIX)/bin
+	install -m 0755 $(OBJ)/$(BIN) $(PREFIX)/bin/$(BIN)
 
 clean:
 	-rm -rf $(BIN) obj *.core
