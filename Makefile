@@ -1,42 +1,34 @@
-CC ?= clang 
-PREFIX ?= /usr
+BIN = ministat 
+SRCS= ministat.c
+OBJS= ministat.o
 
-CFLAGS += -Wall -Werror
+PKGS = 
+
+CFLAGS  += -g -Wall -Werror
+CPPFLAGS+= -D_GNU_SOURCE
 LDFLAGS += -lm
 
-BIN = ministat 
-SRC = $(BIN).c
+PREFIX ?= /usr
 
 # No user serviceable parts below this line.
-OBJS = $(addprefix $(OBJ), $(SRC:.c=.o))
-DEPS = $(addsuffix .depend, $(OBJS))
-OBJ  = obj
+#PPFLAGS+= $(shell pkg-config --silence-errors --cflags $(PKGS))
+#LDFLAGS += $(shell pkg-config --silence-errors --libs $(PKGS))
 
-all: obj $(OBJ)/$(BIN)
+all: $(BIN)
 
-obj:
-	-mkdir obj
+$(BIN): $(OBJS)
+	$(CC) $(OBJS) ${LDFLAGS} -o ${BIN}
 
-$(OBJ)$/(BIN): $(OBJS)
-	$(CC) -o $@ $^ ${LDFLAGS}
-
-
-$(OBJ)/%.o: %.c
-	@echo "Generating $@.depend"
-	@$(CC) $(CFLAGS) -MM $< | \
-	sed 's,$*\.o[ :]*,$@ $@.depend : ,g' >> $@.depend
-	$(CC) $(CFLAGS) -o $@ -c $<
-
-depend:
-	@echo "Dependencies are automatically generated."
+$(OBJS): %.o: %.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $<
 
 install:
 	install -d $(PREFIX)/bin
-	install -m 0755 $(OBJ)/$(BIN) $(PREFIX)/bin/$(BIN)
+	install -m 0755 $(BIN) $(PREFIX)/bin/$(BIN)
 
 clean:
-	-rm -rf $(BIN) obj *.core
+	-rm -rf $(BIN) *.o *.core
 
-.PHONY: all depend install clean
+.PHONY: install clean
 
 -include $(DEPS)

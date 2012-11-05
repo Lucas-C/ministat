@@ -1,2 +1,3 @@
-obj
+ministat
+*.o
 *.core
