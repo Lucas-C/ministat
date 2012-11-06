@@ -7,15 +7,14 @@
  * ----------------------------------------------------------------------------
  *
  */
-#include <sys/queue.h>
-
-
 #include <err.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#include "queue.h"
 
 #include <asm-generic/ioctls.h>
 #include <asm-generic/termios.h>
