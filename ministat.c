@@ -520,6 +520,7 @@ usage(char const *whine)
 	fprintf(stderr, "\t-C : column number to extract (starts and defaults to 1)\n");
 	fprintf(stderr, "\t-d : delimiter(s) string, default to \" \\t\"\n");
 	fprintf(stderr, "\t-n : print summary statistics only, no graph/test\n");
+	fprintf(stderr, "\t-q : print summary statistics and test only, no graph\n");
 	fprintf(stderr, "\t-s : print avg/median/stddev bars on separate lines\n");
 	fprintf(stderr, "\t-w : width of graph/test output (default 74 or terminal width)\n");
 	exit (2);
@@ -537,6 +538,7 @@ main(int argc, char **argv)
 	int column = 1;
 	int flag_s = 0;
 	int flag_n = 0;
+	int flag_q = 0;
 	int termwidth = 74;
 
 	if (isatty(STDOUT_FILENO)) {
@@ -550,7 +552,7 @@ main(int argc, char **argv)
 	}
 
 	ci = -1;
-	while ((c = getopt(argc, argv, "C:c:d:snw:")) != -1)
+	while ((c = getopt(argc, argv, "C:c:d:snqw:")) != -1)
 		switch (c) {
 		case 'C':
 			column = strtol(optarg, &p, 10);
@@ -576,6 +578,9 @@ main(int argc, char **argv)
 			break;
 		case 'n':
 			flag_n = 1;
+			break;
+		case 'q':
+			flag_q = 1;
 			break;
 		case 's':
 			flag_s = 1;
@@ -610,7 +615,7 @@ main(int argc, char **argv)
 	for (i = 0; i < nds; i++) 
 		printf("%c %s\n", symbol[i+1], ds[i]->name);
 
-	if (!flag_n) {
+	if (!flag_n && !flag_q) {
 		SetupPlot(termwidth, flag_s, nds);
 		for (i = 0; i < nds; i++)
 			DimPlot(ds[i]);

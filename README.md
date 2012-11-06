@@ -20,6 +20,7 @@ The FreeBSD man page is very relevant, pursue it [here](http://www.freebsd.org/c
 		-C : column number to extract (starts and defaults to 1)
 		-d : delimiter(s) string, default to " \t"
 		-n : print summary statistics only, no graph/test
+		-q : print summary statistics and test only, no graph
 		-s : print avg/median/stddev bars on separate lines
 		-w : width of graph/test output (default 74 or terminal width)
 
