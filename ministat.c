@@ -7,6 +7,8 @@
  * ----------------------------------------------------------------------------
  *
  */
+#include <sys/ioctl.h>
+
 #include <err.h>
 #include <math.h>
 #include <stdio.h>
@@ -15,10 +17,6 @@
 #include <unistd.h>
 
 #include "queue.h"
-
-#include <asm-generic/ioctls.h>
-#include <asm-generic/termios.h>
-#include <stropts.h>
 
 #define NSTUDENT 100
 #define NCONF 6
