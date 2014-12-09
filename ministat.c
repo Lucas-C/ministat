@@ -241,7 +241,7 @@ Relative(struct dataset *ds, struct dataset *rs, int confidx)
 	e = t * s;
 
 	if (fabs(d) > e) {
-	
+
 		printf("Difference at %.1f%% confidence\n", studentpct[confidx]);
 		printf("	%g +/- %g\n", d, e);
 		printf("	%g%% +/- %g%%\n", d * 100 / Avg(rs), e * 100 / Avg(rs));
@@ -309,7 +309,7 @@ DimPlot(struct dataset *ds)
 }
 
 static void
-PlotSet(struct dataset *ds, int val)
+PlotSet(struct dataset *ds, int val, double height_scale)
 {
 	struct plot *pl;
 	int i, j, m, x;
@@ -333,7 +333,7 @@ PlotSet(struct dataset *ds, int val)
 		pl->bar[bar] = malloc(pl->width);
 		memset(pl->bar[bar], 0, pl->width);
 	}
-	
+
 	m = 1;
 	i = -1;
 	j = 0;
@@ -348,7 +348,7 @@ PlotSet(struct dataset *ds, int val)
 			i = x;
 		}
 	}
-	m += 1;
+	m = (int)(m * height_scale) + 1;
 	if (m > pl->height) {
 		pl->data = realloc(pl->data, pl->width * m);
 		memset(pl->data + pl->height * pl->width, 0,
@@ -364,7 +364,7 @@ PlotSet(struct dataset *ds, int val)
 			j = 1;
 			i = x;
 		}
-		pl->data[j * pl->width + x] |= val;
+		pl->data[(int)(j * height_scale) * pl->width + x] |= val;
 	}
 	if (!isnan(Stddev(ds))) {
 		x = ((Avg(ds) - Stddev(ds)) - pl->x0) / pl->dx;
@@ -516,6 +516,7 @@ usage(char const *whine)
 	fprintf(stderr, "}\n");
 	fprintf(stderr, "\t-C : column number to extract (starts and defaults to 1)\n");
 	fprintf(stderr, "\t-d : delimiter(s) string, default to \" \\t\"\n");
+	fprintf(stderr, "\t-H : height scale factor (defaults to 1)\n");
 	fprintf(stderr, "\t-n : print summary statistics only, no graph/test\n");
 	fprintf(stderr, "\t-q : print summary statistics and test only, no graph\n");
 	fprintf(stderr, "\t-s : print avg/median/stddev bars on separate lines\n");
@@ -533,6 +534,7 @@ main(int argc, char **argv)
 	char *p;
 	int c, i, ci;
 	int column = 1;
+	double height_scale = 1;
 	int flag_s = 0;
 	int flag_n = 0;
 	int flag_q = 0;
@@ -549,7 +551,7 @@ main(int argc, char **argv)
 	}
 
 	ci = -1;
-	while ((c = getopt(argc, argv, "C:c:d:snqw:")) != -1)
+	while ((c = getopt(argc, argv, "C:c:d:H:nqsw:")) != -1)
 		switch (c) {
 		case 'C':
 			column = strtol(optarg, &p, 10);
@@ -572,6 +574,13 @@ main(int argc, char **argv)
 			if (*optarg == '\0')
 				usage("Can't use empty delimiter string");
 			delim = optarg;
+			break;
+		case 'H':
+			height_scale = strtod(optarg, &p);
+			if (p != NULL && *p != '\0')
+				usage("Not a floating point number");
+			if (height_scale <= 0)
+				usage("Height scale must be strictly positive");
 			break;
 		case 'n':
 			flag_n = 1;
@@ -609,7 +618,7 @@ main(int argc, char **argv)
 			ds[i] = ReadSet(argv[i], column, delim);
 	}
 
-	for (i = 0; i < nds; i++) 
+	for (i = 0; i < nds; i++)
 		printf("%c %s\n", symbol[i+1], ds[i]->name);
 
 	if (!flag_n && !flag_q) {
@@ -617,7 +626,7 @@ main(int argc, char **argv)
 		for (i = 0; i < nds; i++)
 			DimPlot(ds[i]);
 		for (i = 0; i < nds; i++)
-			PlotSet(ds[i], i + 1);
+			PlotSet(ds[i], i + 1, height_scale);
 		DumpPlot();
 	}
 	VitalsHead();
